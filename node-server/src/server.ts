@@ -1,6 +1,7 @@
 import express, { Request, Response, Application } from 'express';
 import cors from 'cors';
-import { Summoner, getSummonerByName, getSummonerLeague } from './RiotApi/riotService';
+import { getSummonerById, getSummonerByName, getSummonerLeague, getSummonerMatchList } from './RiotApi/riotService';
+import { Summoner, SummonerMatchList } from './types/RiotAPITypes';
 
 const app: Application = express();
 app.use(express.json())
@@ -35,6 +36,26 @@ app.get("/api/summoner", async (req: Request, res: Response): Promise<void> => {
     } catch (e) {
       console.log(e);
       res.sendStatus(404);
+    }
+  }
+})
+
+app.get("/api/summoner/:accountId/matchlist", async (req: Request, res: Response): Promise<void> => {
+  console.log("Get Matchlist for summoner with the Id: ", req.params.accountId);
+  const { accountId } = req.params;
+  const { server } = req.query;
+  if (accountId === undefined || typeof accountId !== "string" || server === undefined) {
+    res.sendStatus(404);
+  } else {
+    try {
+      const summoner: Summoner = await getSummonerById(accountId, server as string);
+      const matchList: SummonerMatchList = await getSummonerMatchList(accountId, server as string);
+      console.log("Summoner exist and Matchlist was loaded");
+      res.send(JSON.stringify(matchList));
+    } catch (e) {
+      console.log(e);
+      res.sendStatus(404);
+      res.send((e as Error).message);
     }
   }
 })

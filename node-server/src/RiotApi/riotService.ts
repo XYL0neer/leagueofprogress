@@ -1,37 +1,10 @@
 import https from 'https';
 import { keys } from '../config/keys';
+import { Summoner, ListLeagueEntry, SummonerMatchList } from 'src/types/RiotAPITypes';
 
 const { riotApiKey } = keys();
 
-export interface Summoner {
-  id: string;
-  accountId: string;
-  name: string;
-  profileIconId: number;
-  puuid: string;
-  revisionDate: number;
-  summonerLevel: number;
-  leagues?: ListLeagueEntry;
-}
 
-interface ListLeagueEntry {
-  [index: number]: LeagueEntry;
-}
-interface LeagueEntry {
-  leagueId: string;
-  queueType: string;
-  tier: string;
-  rank: string;
-  summonerId: string;
-  summonerName: string;
-  leaguePoints: number;
-  wins: number;
-  losses: number;
-  veteran: boolean;
-  inactive: boolean;
-  freshBlood: boolean;
-  hotStreak: boolean;
-}
 
 export const getSummonerByName = (summonerName: string, server: string): Promise<Summoner> => {
   return new Promise<Summoner>((resolve, reject) => {
@@ -53,15 +26,15 @@ export const getSummonerByName = (summonerName: string, server: string): Promise
       }
     ).on("error", (err) => {
       console.log("Error: " + err.message);
-      reject(err)
+      reject("Summoner does not exist")
     });
   });
 }
 
-export const getSummonerById = (summonerId: string, server: string): Promise<Summoner> => {
+export const getSummonerById = (accountId: string, server: string): Promise<Summoner> => {
   return new Promise<Summoner>((resolve, reject) => {
     https.get(
-      `https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-id/${summonerId}?api_key=${riotApiKey}`, (resp) => {
+      `https://${server}.api.riotgames.com/lol/summoner/v4/summoners/by-id/${accountId}?api_key=${riotApiKey}`, (resp) => {
         let data = '';
 
         resp.on('data', (chunk) => {
@@ -74,7 +47,7 @@ export const getSummonerById = (summonerId: string, server: string): Promise<Sum
       }
     ).on("error", (err) => {
       console.log("Error: " + err.message);
-      reject(err)
+      reject("Summoner does not exist")
     });
   });
 }
@@ -93,7 +66,26 @@ export const getSummonerLeague = (summonerId: string, server: string): Promise<L
       });
     }).on("error", (err) => {
       console.log("Error: " + err.message);
-      reject(err)
+      reject(new Error("Cant find Summoner League"))
+    });
+  });
+}
+
+export const getSummonerMatchList = (accountId: string, server: string): Promise<SummonerMatchList> => {
+  return new Promise<SummonerMatchList>((resolve, reject) => {
+    https.get(`https://${server}.api.riotgames.com/lol/match/v4/matchlists/by-account/${accountId}?api_key=${riotApiKey}`, (resp) => {
+      let data = '';
+
+      resp.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      resp.on('end', () => {
+        resolve(JSON.parse(data));
+      });
+    }).on("error", (err) => {
+      console.log("Error: " + err.message);
+      reject(new Error("Matchlist couldnt load"))
     });
   });
 }
