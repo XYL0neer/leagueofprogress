@@ -23,25 +23,23 @@
 
 <script lang="ts">
 import { defineComponent, PropType, toRefs } from "vue";
-import { ListLeagueEntry } from "@/common/types";
+import { LeagueEntry } from "@/common/types";
 
 export default defineComponent({
   props: {
     leagues: {
-      type: Object as PropType<ListLeagueEntry>,
+      type: [] as PropType<LeagueEntry[]>,
       required: true,
     },
   },
   setup(props) {
     const { leagues } = toRefs(props);
-    console.log(leagues);
 
     const getImgUrl = (tier: string): NodeRequire => {
       return require("@/assets/ranked-emblems/" + tier + ".png");
     };
 
     const getQueueType = (queueType: string): string => {
-      console.log(queueType);
       if (queueType === "RANKED_SOLO_5x5") return "Solo/Duo";
       if (queueType === "RANKED_FLEX_SR") return "Flex";
       return "";

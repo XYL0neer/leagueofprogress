@@ -71,9 +71,9 @@ export const getSummonerLeague = (summonerId: string, server: string): Promise<L
   });
 }
 
-export const getSummonerMatchList = (accountId: string, server: string): Promise<SummonerMatchList> => {
+export const getSummonerMatchList = (accountId: string, server: string, beginIndex: number): Promise<SummonerMatchList> => {
   return new Promise<SummonerMatchList>((resolve, reject) => {
-    https.get(`https://${server}.api.riotgames.com/lol/match/v4/matchlists/by-account/${accountId}?api_key=${riotApiKey}`, (resp) => {
+    https.get(`https://${server}.api.riotgames.com/lol/match/v4/matchlists/by-account/${accountId}?api_key=${riotApiKey}&beginIndex=${beginIndex}&endIndex=${beginIndex + 50}`, (resp) => {
       let data = '';
 
       resp.on('data', (chunk) => {

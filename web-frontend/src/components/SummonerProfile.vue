@@ -1,5 +1,5 @@
 <template>
-  <div v-if="summoner !== undefined">
+  <div v-if="summoner !== null">
     <div class="summ-profile">
       <div>
         <img
@@ -13,6 +13,10 @@
 
       <SummonerProfileRank :leagues="summoner.leagues" />
     </div>
+    <SummonerProfileMatchList
+      :accountId="summoner.accountId"
+      :server="'euw1'"
+    />
   </div>
   <div v-else-if="searching"></div>
   <div v-else>
@@ -24,27 +28,27 @@
 import { computed, defineComponent, onMounted, ref, Ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import SummonerProfileRank from "./SummonerProfileRank.vue";
+import SummonerProfileMatchList from "./SummonerProfileMatchList.vue";
 import { Summoner } from "../common/types";
 
 export default defineComponent({
   components: {
     SummonerProfileRank,
+    SummonerProfileMatchList,
   },
   setup() {
     const route = useRoute();
 
     const name = computed(() => route.params["summonername"]);
     const searching: Ref<boolean> = ref<boolean>(false);
-    const summoner: Ref<Summoner | undefined> =
-      ref<Summoner | undefined>(undefined);
+    const summoner: Ref<Summoner | null> = ref<Summoner | null>(null);
 
     const getSummonerProfile = async () => {
       searching.value = true;
       try {
         let data = await fetchSummoner<Summoner>(name.value.toString(), "euw1");
         summoner.value = data as Summoner;
-
-        console.log(summoner.value);
+        console.log(summoner);
       } catch (e) {
         console.error((e as Error).message);
       } finally {
@@ -55,7 +59,7 @@ export default defineComponent({
     onMounted(getSummonerProfile);
 
     watch(name, (newValue, oldValue) => {
-      summoner.value = undefined;
+      summoner.value = null;
       getSummonerProfile();
     });
 

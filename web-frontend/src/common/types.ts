@@ -6,12 +6,9 @@ export interface Summoner {
   puuid: string;
   revisionDate: number;
   summonerLevel: number;
-  leagues: ListLeagueEntry;
+  leagues: LeagueEntry[];
 }
 
-export interface ListLeagueEntry {
-  [index: number]: LeagueEntry;
-}
 export interface LeagueEntry {
   leagueId: string;
   queueType: string;
@@ -26,4 +23,23 @@ export interface LeagueEntry {
   inactive: boolean;
   freshBlood: boolean;
   hotStreak: boolean;
+}
+
+
+export interface SummonerMatchList {
+  startIndex: number;
+  totalGames: number;
+  endIndex: number;
+  matches: Match[];
+}
+
+export interface Match {
+  gameId: number;
+  role: string;
+  season: number;
+  platformId: string;
+  champion: number;
+  queue: number;
+  lane: string;
+  timestamp: number;
 }

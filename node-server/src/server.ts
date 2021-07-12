@@ -43,13 +43,17 @@ app.get("/api/summoner", async (req: Request, res: Response): Promise<void> => {
 app.get("/api/summoner/:accountId/matchlist", async (req: Request, res: Response): Promise<void> => {
   console.log("Get Matchlist for summoner with the Id: ", req.params.accountId);
   const { accountId } = req.params;
-  const { server } = req.query;
+  const { server, beginIndex } = req.query;
+  let index: number = 0;
+  if (beginIndex !== undefined) {
+    index = Number(beginIndex);
+  }
   if (accountId === undefined || typeof accountId !== "string" || server === undefined) {
     res.sendStatus(404);
   } else {
     try {
       const summoner: Summoner = await getSummonerById(accountId, server as string);
-      const matchList: SummonerMatchList = await getSummonerMatchList(accountId, server as string);
+      const matchList: SummonerMatchList = await getSummonerMatchList(accountId, server as string, index);
       console.log("Summoner exist and Matchlist was loaded");
       res.send(JSON.stringify(matchList));
     } catch (e) {
