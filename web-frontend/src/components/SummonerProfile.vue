@@ -29,7 +29,7 @@ import { computed, defineComponent, onMounted, ref, Ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import SummonerProfileRank from "./SummonerProfileRank.vue";
 import SummonerProfileMatchList from "./SummonerProfileMatchList.vue";
-import { Summoner } from "../common/types";
+import { Summoner } from "../common/summonerTypes";
 
 export default defineComponent({
   components: {

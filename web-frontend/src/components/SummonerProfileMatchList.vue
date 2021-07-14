@@ -1,14 +1,22 @@
 <template>
-  <div v-for="match in matchList" :key="match.gameId">
-    {{ match.gameId }}
+  <div class="matchList">
+    <SummonerProfileMatchItem />
+    <SummonerProfileMatchItem />
+    <div v-for="match in matchList" :key="match.gameId">
+      {{ match.gameId }}
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref, Ref } from "vue";
-import { SummonerMatchList, Match } from "@/common/types";
+import { SummonerMatchList, Match } from "@/common/summonerTypes";
+import SummonerProfileMatchItem from "./SummonerProfileMatchItem.vue";
 
 export default defineComponent({
+  components: {
+    SummonerProfileMatchItem,
+  },
   props: {
     accountId: {
       type: String,
@@ -43,3 +51,10 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.matchList {
+  margin-left: 160px;
+  margin-right: 160px;
+}
+</style>

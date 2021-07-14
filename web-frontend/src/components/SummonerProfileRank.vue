@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, toRefs } from "vue";
-import { LeagueEntry } from "@/common/types";
+import { LeagueEntry } from "@/common/summonerTypes";
 
 export default defineComponent({
   props: {
