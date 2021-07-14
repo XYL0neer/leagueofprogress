@@ -1,7 +1,8 @@
 import express, { Request, Response, Application } from 'express';
 import cors from 'cors';
-import { getSummonerById, getSummonerByName, getSummonerLeague, getSummonerMatchList } from './RiotApi/riotService';
+import { getMatchById, getSummonerById, getSummonerByName, getSummonerLeague, getSummonerMatchList } from './RiotApi/riotService';
 import { Summoner, SummonerMatchList } from './types/RiotAPITypes';
+import { Match } from './types/RiotAPIMatch';
 
 const app: Application = express();
 app.use(express.json())
@@ -61,6 +62,26 @@ app.get("/api/summoner/:accountId/matchlist", async (req: Request, res: Response
       res.sendStatus(404);
       res.send((e as Error).message);
     }
+  }
+})
+
+app.get("/api/match/:matchId", async (req: Request, res: Response): Promise<void> => {
+  console.log("Get Match with Id: " + req.params.matchId);
+  const { matchId } = req.params;
+  const { server } = req.query;
+  if (matchId === undefined || server === undefined) {
+    res.sendStatus(404);
+  } else {
+    try {
+      const match: Match = await getMatchById(matchId, server as string);
+      console.log(match);
+      res.send(JSON.stringify(match));
+    } catch (e) {
+      console.log(e);
+      res.sendStatus(404);
+      res.send((e as Error).message);
+    }
+
   }
 })
 
