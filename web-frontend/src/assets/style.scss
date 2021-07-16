@@ -1,6 +1,7 @@
-$base-color: darkkhaki;
-$accent-color: paleturquoise;
-$primary-color: hotpink;
+$base-color: rgb(0, 9, 19);
+$accent-color: rgb(11, 198, 227);
+$primary-color: rgb(194, 144, 45);
+$text-color: white;
 
 
 #app {
@@ -8,6 +9,7 @@ $primary-color: hotpink;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  color: $text-color;
 
 }
 
@@ -17,7 +19,7 @@ body {
 }
 
 .router-link {
-  color: black;
+  color: $text-color;
   text-decoration: none;
 }
 
@@ -62,7 +64,7 @@ body {
 
 
 .btn {
-  background-color: $primary-color;
+  background-color: $accent-color;
   font-size: 20px;
   padding: 6px;
   border: none;

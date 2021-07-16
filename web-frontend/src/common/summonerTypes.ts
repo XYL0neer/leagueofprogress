@@ -30,10 +30,10 @@ export interface SummonerMatchList {
   startIndex: number;
   totalGames: number;
   endIndex: number;
-  matches: Match[];
+  matches: SummonerMatch[];
 }
 
-export interface Match {
+export interface SummonerMatch {
   gameId: number;
   role: string;
   season: number;

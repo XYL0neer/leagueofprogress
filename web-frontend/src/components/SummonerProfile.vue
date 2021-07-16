@@ -43,6 +43,25 @@ export default defineComponent({
     const searching: Ref<boolean> = ref<boolean>(false);
     const summoner: Ref<Summoner | null> = ref<Summoner | null>(null);
 
+    async function fetchSummoner<T>(
+      summonername: string,
+      server: string
+    ): Promise<T> {
+      const response = await fetch(
+        `http://localhost:8080/api/summoner?summoner=${summonername}&server=${server}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 404) {
+        throw new Error("Summoner not found");
+      }
+      const body = (await response.json()) as Promise<T>;
+      return body;
+    }
+
     const getSummonerProfile = async () => {
       searching.value = true;
       try {
@@ -62,25 +81,6 @@ export default defineComponent({
       summoner.value = null;
       getSummonerProfile();
     });
-
-    async function fetchSummoner<T>(
-      summonername: string,
-      server: string
-    ): Promise<T> {
-      const response = await fetch(
-        `http://localhost:8080/api/summoner?summoner=${summonername}&server=${server}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.status === 404) {
-        throw new Error("Summoner not found");
-      }
-      const body = (await response.json()) as Promise<T>;
-      return body;
-    }
 
     return {
       name,

@@ -22,13 +22,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, toRefs } from "vue";
 import { LeagueEntry } from "@/common/summonerTypes";
+import { defineComponent, PropType, toRefs } from "vue";
 
 export default defineComponent({
   props: {
     leagues: {
-      type: [] as PropType<LeagueEntry[]>,
+      type: Array as PropType<LeagueEntry[]>,
       required: true,
     },
   },

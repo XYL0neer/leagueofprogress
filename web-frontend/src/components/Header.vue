@@ -1,11 +1,9 @@
 <template>
   <header class="header">
-    <div class="left">
-      <router-link class="router-link" to="/">
-        <img src="../assets/logo.png" alt="logo" width="64" height="64" />
-      </router-link>
+    <router-link class="router-link left" to="/">
+      <img src="../assets/logo.png" alt="logo" width="64" height="64" />
       <h3>League of Progress</h3>
-    </div>
+    </router-link>
     <div class="center" v-if="!isLandingPage">
       <SummonerSearchBox />
     </div>
@@ -37,24 +35,21 @@ export default defineComponent({
   display: flex;
 
   align-items: center;
-
-  background-color: $accent-color;
+  justify-content: space-around;
+  background-color: $base-color;
   padding: 16px;
 }
 
 .left {
   text-align: start;
   display: inline-flex;
-  flex: 1;
 }
 
 .center {
   text-align: center;
-  flex: 2;
 }
 
 .right {
   text-align: end;
-  flex: 1;
 }
 </style>
