@@ -5,7 +5,7 @@
         <h4 v-if="summonerStats.stats.win">Win</h4>
         <h4 v-else>Loose</h4>
         <img
-          :src="`${communitydragon}/champion/${summonerStats.championId}/square`"
+          :src="`${communityCDNDragon}/champion/${summonerStats.championId}/square`"
           alt="championIcon"
         />
         <p>{{ championName }}</p>
@@ -25,8 +25,15 @@
       <div class="itemGrid">
         <div>
           <img
-            src="https://raw.communitydragon.org/latest/game/assets/perks/styles/precision/conqueror/conqueror.png"
-            alt="Rune"
+            :src="
+              getKeystone(
+                summonerStats.stats.perkPrimaryStyle,
+                summonerStats.stats.perk0
+              )
+            "
+            alt="Key Rune"
+            width="60"
+            height="60"
           />
           <img
             src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/spell/SummonerFlash.png"
@@ -178,16 +185,14 @@
 import { Match, Participant } from "@/common/matchTypes";
 import { SummonerMatch } from "@/common/summonerTypes";
 import {
-  defineComponent,
-  PropType,
-  ref,
-  Ref,
-  onMounted,
-  toRefs,
-  computed,
-  reactive,
-  watch,
-} from "vue";
+  PerkTree,
+  PrecisionTree,
+  DominationTree,
+  InspirationTree,
+  SorceryTree,
+  ResolveTree,
+} from "@/common/runesReforged";
+import { defineComponent, PropType, ref, Ref, onMounted, computed } from "vue";
 
 export default defineComponent({
   props: {
@@ -205,7 +210,8 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const communitydragon = ref(process.env.VUE_APP_CDRAGON_CDN_URL);
+    const communityCDNDragon = ref(process.env.VUE_APP_CDRAGON_CDN_URL);
+    const communityRARWDragon = ref(process.env.VUE_APP_CDRAGON_RAW_URL);
     const summonerMatch = ref(props.match);
     const championName = ref("NaN");
     const match: Ref<Match | null> = ref<Match | null>(null);
@@ -222,6 +228,38 @@ export default defineComponent({
       }
       return undefined;
     });
+
+    const getKeystone = (tree: number, rune: number): string => {
+      console.log(tree + " " + rune);
+      const perkTree = PerkTree[tree];
+      console.log(perkTree);
+
+      let keyStone = undefined;
+      switch (perkTree) {
+        case "Precision":
+          keyStone = PrecisionTree[rune];
+          break;
+        case "Domination":
+          keyStone = DominationTree[rune];
+          break;
+        case "Sorcery":
+          keyStone = SorceryTree[rune];
+          break;
+        case "Resolve":
+          keyStone = ResolveTree[rune];
+          break;
+        case "Inspiration":
+          keyStone = InspirationTree[rune];
+          break;
+      }
+      console.log(keyStone);
+      if (keyStone === undefined || perkTree === undefined) {
+        return `${communityRARWDragon.value}/v1/perk-images/styles/runesicon.png`;
+      }
+      return `${
+        communityRARWDragon.value
+      }/v1/perk-images/styles/${perkTree.toLowerCase()}/${keyStone.toLowerCase()}/${keyStone.toLowerCase()}.png`;
+    };
 
     async function getMatch<T>(gameId: number, server: string): Promise<T> {
       const res = await fetch(
@@ -251,7 +289,7 @@ export default defineComponent({
     const getChampionName = () => {
       let error = undefined;
       fetch(
-        `${communitydragon.value}/champion/${summonerMatch.value.champion}/data`
+        `${communityCDNDragon.value}/champion/${summonerMatch.value.champion}/data`
       )
         .then((res) => {
           if (res.status !== 200) {
@@ -272,11 +310,13 @@ export default defineComponent({
     });
 
     return {
-      communitydragon,
+      communityCDNDragon,
+      communityRARWDragon,
       summonerMatch,
       summonerStats,
       championName,
       match,
+      getKeystone,
     };
   },
 });
