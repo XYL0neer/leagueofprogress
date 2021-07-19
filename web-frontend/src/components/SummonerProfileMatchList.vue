@@ -2,6 +2,7 @@
   <div class="matchList">
     <div v-for="match in matchList" :key="match.gameId">
       <SummonerProfileMatchItem
+        :summonerSpells="summonerSpells"
         :accountId="accountId"
         :match="match"
         :server="server"
@@ -11,9 +12,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, Ref } from "vue";
+import { defineComponent, onBeforeMount, reactive, ref, Ref } from "vue";
 import { SummonerMatchList, SummonerMatch } from "@/common/summonerTypes";
 import SummonerProfileMatchItem from "./SummonerProfileMatchItem.vue";
+import { SummonerSpell } from "@/common/spells";
 
 export default defineComponent({
   components: {
@@ -30,10 +32,32 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const communityRARWDragon = ref(process.env.VUE_APP_CDRAGON_RAW_URL);
     const accountId = ref(props.accountId);
     const server = props.server;
     const matchList = reactive<SummonerMatch[]>([]);
     const currentIndex: Ref<number> = ref<number>(0);
+    const summonerSpells = ref<SummonerSpell[]>([]);
+
+    async function getSummonerSpellInformation<T>(): Promise<T> {
+      const res = await fetch(
+        `${communityRARWDragon.value}/v1/summoner-spells.json`
+      );
+      if (res.status === 404) {
+        throw new Error("Summoner not found");
+      }
+      const data = (await res.json()) as Promise<T>;
+      return data;
+    }
+
+    const getSpells = async (): Promise<void> => {
+      try {
+        const data = await getSummonerSpellInformation<Array<SummonerSpell>>();
+        summonerSpells.value = data as Array<SummonerSpell>;
+      } catch (e) {
+        console.error((e as Error).message);
+      }
+    };
 
     const loadMatchList = async (
       accountId: string,
@@ -51,7 +75,9 @@ export default defineComponent({
 
     loadMatchList(props.accountId, server, currentIndex.value);
 
-    return { matchList, server, accountId };
+    onBeforeMount(getSpells);
+
+    return { matchList, server, accountId, summonerSpells };
   },
 });
 </script>

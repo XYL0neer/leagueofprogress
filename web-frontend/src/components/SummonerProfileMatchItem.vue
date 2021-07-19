@@ -36,12 +36,16 @@
             height="60"
           />
           <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/spell/SummonerFlash.png"
+            :src="getSummonerSpell(summonerStats.spell1Id)"
             alt="sum-D"
+            width="60"
+            height="60"
           />
           <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/spell/SummonerFlash.png"
+            :src="getSummonerSpell(summonerStats.spell2Id)"
             alt="sum-F"
+            width="60"
+            height="60"
           />
         </div>
         <div>
@@ -184,6 +188,7 @@
  <script lang="ts">
 import { Match, Participant } from "@/common/matchTypes";
 import { SummonerMatch } from "@/common/summonerTypes";
+import { SummonerSpell } from "@/common/spells";
 import {
   PerkTree,
   PrecisionTree,
@@ -192,10 +197,23 @@ import {
   SorceryTree,
   ResolveTree,
 } from "@/common/runesReforged";
-import { defineComponent, PropType, ref, Ref, onMounted, computed } from "vue";
+import {
+  defineComponent,
+  PropType,
+  ref,
+  Ref,
+  onMounted,
+  computed,
+  onBeforeMount,
+  toRef,
+} from "vue";
 
 export default defineComponent({
   props: {
+    summonerSpells: {
+      type: Array as PropType<Array<SummonerSpell>>,
+      required: true,
+    },
     accountId: {
       type: String,
       required: true,
@@ -212,9 +230,11 @@ export default defineComponent({
   setup(props) {
     const communityCDNDragon = ref(process.env.VUE_APP_CDRAGON_CDN_URL);
     const communityRARWDragon = ref(process.env.VUE_APP_CDRAGON_RAW_URL);
+    const summonerSpells: Array<SummonerSpell> = props.summonerSpells;
     const summonerMatch = ref(props.match);
     const championName = ref("NaN");
     const match: Ref<Match | null> = ref<Match | null>(null);
+
     const summonerStats = computed<Participant | undefined>(():
       | Participant
       | undefined => {
@@ -229,10 +249,26 @@ export default defineComponent({
       return undefined;
     });
 
+    const getSummonerSpell = (summonerspellId: number): string => {
+      console.log(summonerspellId);
+      if (summonerspellId === undefined) {
+        return `${communityRARWDragon.value}/data/spells/icons2d/summoner_empty.png`;
+      }
+      console.log(summonerSpells);
+      let spell: SummonerSpell | undefined = summonerSpells.find(
+        (e) => e.id == summonerspellId
+      );
+      console.log(spell);
+
+      return `${communityRARWDragon.value}/data/spells/icons2d/${
+        spell !== undefined
+          ? spell.iconPath.split("/").pop()?.toLowerCase()
+          : "summoner_empty.png"
+      }`;
+    };
+
     const getKeystone = (tree: number, rune: number): string => {
-      console.log(tree + " " + rune);
       const perkTree = PerkTree[tree];
-      console.log(perkTree);
 
       let keyStone = undefined;
       switch (perkTree) {
@@ -252,7 +288,6 @@ export default defineComponent({
           keyStone = InspirationTree[rune];
           break;
       }
-      console.log(keyStone);
       if (keyStone === undefined || perkTree === undefined) {
         return `${communityRARWDragon.value}/v1/perk-images/styles/runesicon.png`;
       }
@@ -273,14 +308,12 @@ export default defineComponent({
     }
 
     const loadMatch = async () => {
-      console.log("load Match");
       try {
         const data = await getMatch<Match>(
           summonerMatch.value.gameId,
           props.server
         );
         match.value = data as Match;
-        console.log(match.value);
       } catch (e) {
         console.error((e as Error).message);
       }
@@ -305,9 +338,7 @@ export default defineComponent({
 
     getChampionName();
 
-    onMounted(() => {
-      loadMatch();
-    });
+    onBeforeMount(loadMatch);
 
     return {
       communityCDNDragon,
@@ -317,6 +348,7 @@ export default defineComponent({
       championName,
       match,
       getKeystone,
+      getSummonerSpell,
     };
   },
 });
