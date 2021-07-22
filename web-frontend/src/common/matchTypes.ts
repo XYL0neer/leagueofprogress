@@ -1,3 +1,13 @@
+export enum Queue {
+  ARAM = 440,
+  ARURF = 325,
+  Flex = 440,
+  SoloQ = 420,
+  Blind = 430,
+  Draft = 400,
+  Spellbook = 1400,
+}
+
 export interface Match {
   gameId: number;
   participantIdentities: participantIdentity[];

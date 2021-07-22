@@ -7,10 +7,12 @@
         <img
           :src="`${communityCDNDragon}/champion/${summonerStats.championId}/square`"
           alt="championIcon"
+          width="60"
+          height="60"
         />
         <p>{{ championName }}</p>
       </div>
-      <div>
+      <div class="stats">
         {{
           `${summonerStats.stats.kills}/${summonerStats.stats.deaths}/${summonerStats.stats.assists}`
         }}
@@ -49,22 +51,57 @@
           />
         </div>
         <div>
-          <img :src="getItem(summonerStats.stats.item0)" alt="" />
-          <img :src="getItem(summonerStats.stats.item3)" alt="" />
+          <img
+            :src="getItem(summonerStats.stats.item0)"
+            alt=""
+            width="60"
+            height="60"
+          />
+          <img
+            :src="getItem(summonerStats.stats.item3)"
+            alt=""
+            width="60"
+            height="60"
+          />
         </div>
         <div>
-          <img :src="getItem(summonerStats.stats.item1)" alt="" />
-          <img :src="getItem(summonerStats.stats.item4)" alt="" />
+          <img
+            :src="getItem(summonerStats.stats.item1)"
+            alt=""
+            width="60"
+            height="60"
+          />
+          <img
+            :src="getItem(summonerStats.stats.item4)"
+            alt=""
+            width="60"
+            height="60"
+          />
         </div>
         <div>
-          <img :src="getItem(summonerStats.stats.item2)" alt="" />
-          <img :src="getItem(summonerStats.stats.item5)" alt="" />
+          <img
+            :src="getItem(summonerStats.stats.item2)"
+            alt=""
+            width="60"
+            height="60"
+          />
+          <img
+            :src="getItem(summonerStats.stats.item5)"
+            alt=""
+            width="60"
+            height="60"
+          />
         </div>
         <div>
-          <img :src="getItem(summonerStats.stats.item6)" alt="" />
+          <img
+            :src="getItem(summonerStats.stats.item6)"
+            alt=""
+            width="60"
+            height="60"
+          />
         </div>
       </div>
-      <div class="teamGrid">
+      <!-- <div class="teamGrid">
         <div>
           <div class="teamMember">
             <img
@@ -159,7 +196,7 @@
             <p>Summoner</p>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -307,6 +344,7 @@ export default defineComponent({
           summonerMatch.value.gameId,
           props.server
         );
+        console.log(data);
         match.value = data as Match;
       } catch (e) {
         console.error((e as Error).message);
@@ -353,10 +391,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 .matchItem {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   background: rgb(6, 28, 37);
-  padding: 4px;
+  padding: 0px 64px;
   margin-bottom: 8px;
   border-left: 16px solid;
 }
@@ -388,5 +426,9 @@ img {
 }
 .loose {
   border-left-color: red;
+}
+
+.stats {
+  font-size: 19px;
 }
 </style>
