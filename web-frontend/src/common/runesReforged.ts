@@ -4,7 +4,7 @@ export enum PerkTree {
 
 export enum PrecisionTree {
   PressTheAttack = 8005,
-  LetalTempo = 8008,
+  LethalTempo = 8008,
   FleetFootwork = 8021,
   Conqueror = 8010,
   Overheal = 9101,

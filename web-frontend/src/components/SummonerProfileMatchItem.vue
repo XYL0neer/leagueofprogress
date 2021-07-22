@@ -49,40 +49,19 @@
           />
         </div>
         <div>
-          <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/item/1001.png"
-            alt=""
-          />
-          <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/item/1001.png"
-            alt=""
-          />
+          <img :src="getItem(summonerStats.stats.item0)" alt="" />
+          <img :src="getItem(summonerStats.stats.item3)" alt="" />
         </div>
         <div>
-          <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/item/1001.png"
-            alt=""
-          />
-          <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/item/1001.png"
-            alt=""
-          />
+          <img :src="getItem(summonerStats.stats.item1)" alt="" />
+          <img :src="getItem(summonerStats.stats.item4)" alt="" />
         </div>
         <div>
-          <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/item/1001.png"
-            alt=""
-          />
-          <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/item/1001.png"
-            alt=""
-          />
+          <img :src="getItem(summonerStats.stats.item2)" alt="" />
+          <img :src="getItem(summonerStats.stats.item5)" alt="" />
         </div>
         <div>
-          <img
-            src="http://ddragon.leagueoflegends.com/cdn/11.14.1/img/item/1001.png"
-            alt=""
-          />
+          <img :src="getItem(summonerStats.stats.item6)" alt="" />
         </div>
       </div>
       <div class="teamGrid">
@@ -202,16 +181,19 @@ import {
   PropType,
   ref,
   Ref,
-  onMounted,
   computed,
   onBeforeMount,
-  toRef,
 } from "vue";
+import { Items } from "@/common/items";
 
 export default defineComponent({
   props: {
     summonerSpells: {
       type: Array as PropType<Array<SummonerSpell>>,
+      required: true,
+    },
+    items: {
+      type: Array as PropType<Array<Items>>,
       required: true,
     },
     accountId: {
@@ -249,17 +231,25 @@ export default defineComponent({
       return undefined;
     });
 
+    const getItem = (itemId: number): string => {
+      if (itemId === undefined || itemId === 0) {
+        return `${communityRARWDragon.value}/assets/items/icons2d/gp_ui_placeholder.png`;
+      }
+      let item: Items | undefined = props.items.find((e) => e.id === itemId);
+      return `${communityRARWDragon.value}/assets/items/icons2d/${
+        item !== undefined
+          ? item.iconPath.split("/").pop()?.toLowerCase()
+          : "gp_ui_placeholder.png"
+      }`;
+    };
+
     const getSummonerSpell = (summonerspellId: number): string => {
-      console.log(summonerspellId);
       if (summonerspellId === undefined) {
         return `${communityRARWDragon.value}/data/spells/icons2d/summoner_empty.png`;
       }
-      console.log(summonerSpells);
       let spell: SummonerSpell | undefined = summonerSpells.find(
         (e) => e.id == summonerspellId
       );
-      console.log(spell);
-
       return `${communityRARWDragon.value}/data/spells/icons2d/${
         spell !== undefined
           ? spell.iconPath.split("/").pop()?.toLowerCase()
@@ -291,9 +281,13 @@ export default defineComponent({
       if (keyStone === undefined || perkTree === undefined) {
         return `${communityRARWDragon.value}/v1/perk-images/styles/runesicon.png`;
       }
+      let imgName = keyStone.toLowerCase();
+      if (keyStone.toLowerCase() === "lethaltempo") {
+        imgName = "lethaltempotemp";
+      }
       return `${
         communityRARWDragon.value
-      }/v1/perk-images/styles/${perkTree.toLowerCase()}/${keyStone.toLowerCase()}/${keyStone.toLowerCase()}.png`;
+      }/v1/perk-images/styles/${perkTree.toLowerCase()}/${keyStone.toLowerCase()}/${imgName}.png`;
     };
 
     async function getMatch<T>(gameId: number, server: string): Promise<T> {
@@ -349,6 +343,7 @@ export default defineComponent({
       match,
       getKeystone,
       getSummonerSpell,
+      getItem,
     };
   },
 });

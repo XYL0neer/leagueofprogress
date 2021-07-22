@@ -3,6 +3,7 @@
     <div v-for="match in matchList" :key="match.gameId">
       <SummonerProfileMatchItem
         :summonerSpells="summonerSpells"
+        :items="items"
         :accountId="accountId"
         :match="match"
         :server="server"
@@ -16,6 +17,7 @@ import { defineComponent, onBeforeMount, reactive, ref, Ref } from "vue";
 import { SummonerMatchList, SummonerMatch } from "@/common/summonerTypes";
 import SummonerProfileMatchItem from "./SummonerProfileMatchItem.vue";
 import { SummonerSpell } from "@/common/spells";
+import { Items } from "@/common/items";
 
 export default defineComponent({
   components: {
@@ -38,13 +40,32 @@ export default defineComponent({
     const matchList = reactive<SummonerMatch[]>([]);
     const currentIndex: Ref<number> = ref<number>(0);
     const summonerSpells = ref<SummonerSpell[]>([]);
+    const items = ref<Items[]>([]);
+
+    async function getItemInformation<T>(): Promise<T> {
+      const res = await fetch(`${communityRARWDragon.value}/v1/items.json`);
+      if (res.status === 404) {
+        throw new Error("Itemdata not found");
+      }
+      const data = (await res.json()) as Promise<T>;
+      return data;
+    }
+
+    const getItems = async (): Promise<void> => {
+      try {
+        const data = await getItemInformation<Array<Items>>();
+        items.value = data as Array<Items>;
+      } catch (e) {
+        console.error((e as Error).message);
+      }
+    };
 
     async function getSummonerSpellInformation<T>(): Promise<T> {
       const res = await fetch(
         `${communityRARWDragon.value}/v1/summoner-spells.json`
       );
       if (res.status === 404) {
-        throw new Error("Summoner not found");
+        throw new Error("Spelldata not found");
       }
       const data = (await res.json()) as Promise<T>;
       return data;
@@ -75,9 +96,12 @@ export default defineComponent({
 
     loadMatchList(props.accountId, server, currentIndex.value);
 
-    onBeforeMount(getSpells);
+    onBeforeMount(() => {
+      getSpells();
+      getItems();
+    });
 
-    return { matchList, server, accountId, summonerSpells };
+    return { matchList, server, accountId, summonerSpells, items };
   },
 });
 </script>
